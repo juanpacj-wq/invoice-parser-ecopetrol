@@ -150,7 +150,7 @@ COMPONENTES_ENERGIA = [
         "name": "Generación",
         "patterns": [
             # Formato viejo con kWh
-            r'1\.\s+Generación,"?([-\d,]+)"?,?([-\d\.]+),"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?',
+            r'1\.\s+Generación,"?([-\d,]*)"?,([-\d\.]+),"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?',
             # Formato nuevo sin kWh
             r'1\.\s+Generación,([-\d\.]+),"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?'
         ],

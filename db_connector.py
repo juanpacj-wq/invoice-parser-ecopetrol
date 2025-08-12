@@ -18,10 +18,10 @@ class DBConnector:
     def __init__(self):
         """Inicializa el conector a la base de datos."""
         self.connection_params = {
-            'host': '',
+            'host': '172.16.2.52',
             'database': 'liquidacionxm',
             'user': 'gecc_read',
-            'password': '',
+            'password': 'OSiiErZ229F#',
             'port': '5432'
         }
     
