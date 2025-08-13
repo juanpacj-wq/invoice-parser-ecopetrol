@@ -7,16 +7,20 @@ para extraer información de las facturas de energía.
 # Patrones regex centralizados para extracción de datos generales
 PATRONES_CONCEPTO = {
     'subtotal_base_energia': [
+        r'Subtotal\s+base\s+energÃ­a[,\s]*"?([0-9.,]+)"?',
+        r'Subtotal\tbase\tenergÃ­a[,\s]*"?([0-9.,]+)"?',
         r'Subtotal base energía.*?"([-\d,]+)"', 
         r'Subtotal\tbase\tenergía.*?"([-\d,]+)"',
         r'Subtotal base energía.*?(?<!")(\d+)(?!")',
         r'Subtotal\tbase\tenergía.*?(?<!")(\d+)(?!")'
     ],
     'contribucion': [
+        r'ContribuciÃ³n[,\s]*"?([0-9.,]+)"?',
         r'Contribución.*?"([-\d,]+)"',
         r'Contribución.*?(?<!")(\d+)(?!")'
     ],
     'contribucion_otros_meses': [
+        r'ContribuciÃ³n\s+de\s+otros\s+meses[,\s]*"?([0-9.,]+)"?',
         r'Contribución de otros meses.*?([-\d,]+)', 
         r'Contribución\tde\totros\tmeses.*?([-\d,]+)',
         r'Contribución de otros meses.*?(?<!")(\d+)(?!")',
@@ -27,84 +31,104 @@ PATRONES_CONCEPTO = {
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*([-\d.,]+)'
     ],
     'subtotal_energia_contribucion_pesos': [
+        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*"?([0-9.,]+)"?',
+        r'Subtotal\tenerg[ií]a\t\+\tcontribución[,\s]*"?([0-9.,]+)"?',
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*"([-\d,]+)"', 
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*"([-\d,]+)"',
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")',
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")'
     ],
     'otros_cobros': [
+        r'Otros\s+cobros[,\s]*"?([-0-9.,]+)"?',
         r'Otros cobros.*?"([-\d,]+)"', 
         r'Otros\tcobros.*?"([-\d,]+)"',
         r'Otros cobros.*?(?<!")(\d+)(?!")', 
         r'Otros\tcobros.*?(?<!")(\d+)(?!")'
     ],
     'sobretasa': [
+       r'Sobretasa[,\s]*"?([0-9.,]+)"?',
        r'Sobretasa.*?([-\d,]+)',
         r'Sobretasa.*?(?<!")(\d+)(?!")' 
     ],
     'ajustes_cargos_regulados': [
+        r'Ajustes\s+cargos\s+regulados[,\s]*"?([0-9.,]+)"?',
         r'Ajustes cargos regulados.*?"([-\d,]+)"', 
         r'Ajustes\tcargos\tregulados.*?"([-\d,]+)"',
         r'Ajustes cargos regulados.*?(?<!")(\d+)(?!")',
         r'Ajustes\tcargos\tregulados.*?(?<!")(\d+)(?!")'
     ],
     'compensaciones': [
+        r'Compensaciones[,\s]*"?([-0-9.,]+)"?',
         r'Compensaciones.*?"([-\d,]+)"',
         r'Compensaciones.*?(?<!")(\d+)(?!")'
     ],
     'saldo_cartera': [
+        r'Saldo\s+cartera[,\s]*"?([0-9.,]+)"?',
         r'Saldo cartera.*?"([-\d,]+)"', 
         r'Saldo\tcartera.*?([-\d,]+)',
         r'Saldo cartera.*?(?<!")(\d+)(?!")',
         r'Saldo\tcartera.*?(?<!")(\d+)(?!")'
     ],
     'interes_mora': [
+        r'InterÃ©s\s+por\s+Mora[,\s]*"?([0-9.,]+)"?',
         r'Interés por Mora.*?"([-\d,]+)"', 
         r'Interés\tpor\tMora.*?"([-\d,]+)"',
         r'Interés por Mora.*?(?<!")(\d+)(?!")',
         r'Interés\tpor\tMora.*?(?<!")(\d+)(?!")'
     ],
     'recobros': [
+        r'Recobros[,\s]*"?([0-9.,]+)"?',
         r'Recobros.*?([-\d,]+)',
         r'Recobros.*?(?<!")(\d+)(?!")' 
     ],
     'alumbrado_publico': [
+        r'Alumbrado\s+pÃºblico\s+\(\*\*\)[,\s]*"?([0-9.,]+)"?',
+        r'Alumbrado\s+público[,\s]*"?([0-9.,]+)"?',
         r'Alumbrado público.*?([-\d,]+)', 
         r'Alumbrado\tpúblico.*?"([-\d,]+)"',
         r'Alumbrado público.*?(?<!")(\d+)(?!")', 
         r'Alumbrado\tpúblico.*?(?<!")(\d+)(?!")'
     ],
     'impuesto_alumbrado_publico': [
+        r'Impuesto\s+alumbrado\s+pÃºblico[,\s]*"?([0-9.,]+)"?',
+        r'Impuesto\s+alumbrado\s+público[,\s]*"?([0-9.,]+)"?',
         r'Impuesto alumbrado público.*?([-\d,]+)', 
         r'Impuesto\talumbrado\tpúblico.*?"([-\d,]+)"',
         r'Impuesto alumbrado público.*?(?<!")(\d+)(?!")',
         r'Impuesto\talumbrado\tpúblico.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_iap_otros_meses': [
+        r'Ajuste\s+IAP\s+otros\s+meses[,\s]*"?([0-9.,]+)"?',
         r'Ajuste IAP otros meses.*?([-\d,]+)', 
         r'Ajuste\tIAP\totros\tmeses.*?"([-\d,]+)"',
         r'Ajuste IAP otros meses.*?(?<!")(\d+)(?!")',
         r'Ajuste\tIAP\totros\tmeses.*?(?<!")(\d+)(?!")'
     ],
     'convivencia_ciudadana': [
+        r'Convivencia\s+ciudadana\s+\(\*\*\*\)[,\s]*"?([0-9.,]+)"?',
+        r'Convivencia\s+ciudadana[,\s]*"?([0-9.,]+)"?',
         r'Convivencia ciudadana.*?"([-\d,]+)"', 
         r'Convivencia\tciudadana.*?"([-\d,]+)"',
         r'Convivencia ciudadana.*?(?<!")(\d+)(?!")',
         r'Convivencia\tciudadana.*?(?<!")(\d+)(?!")'
     ],
     'tasa_especial_convivencia': [
+        r'Tasa\s+especial\s+convivencia\s+ciudadana[,\s]*"?([0-9.,]+)"?',
         r'Tasa especial convivencia ciudadana.*?"([-\d,]+)"', 
         r'Tasa\tespecial\tconvivencia\tciudadana.*?"([-\d,]+)"',
         r'Tasa especial convivencia ciudadana.*?(?<!")(\d+)(?!")',
         r'Tasa\tespecial\tconvivencia\tciudadana.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_tasa_convivencia': [
+        r'Ajuste\s+tasa\s+convivencia\s+otros\s+meses[,\s]*"?([0-9.,]+)"?',
         r'Ajuste tasa convivencia otros meses.*?"([-\d,]+)"', 
         r'Ajuste\ttasa\tconvivencia\totros\tmeses.*?"([-\d,]+)"',
         r'Ajuste tasa convivencia otros meses.*?(?<!")(\d+)(?!")',
         r'Ajuste\ttasa\tconvivencia\totros\tmeses.*?(?<!")(\d+)(?!")'
     ],
     'total_servicio_energia_impuestos': [
+        r'Total\s+servicio\s+energÃ­a\s+\+\s+impuestos[,\s]*"?([0-9.,]+)"?',
+        r'Total\s+servicio\s+energía\s+\+\s+impuestos[,\s]*"?([0-9.,]+)"?',
         r'Total servicio energía \+ impuestos.*?"([-\d,]+)"', 
         r'Total\tservicio\tenergía\t\+\timpuestos.*?"([-\d,]+)"', 
         r'Total\tservicio\tenergía\t\\\+\timpuestos.*?"([-\d,]+)"',
@@ -113,12 +137,14 @@ PATRONES_CONCEPTO = {
         r'Total\tservicio\tenergía\t\\\+\timpuestos.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_decena': [
+        r'Ajuste\s+a\s+la\s+decena[,\s]*"?([0-9.,]+)"?',
         r'Ajuste a la decena.*?([-\d,]+)', 
         r'Ajuste\ta\tla\tdecena.*?([-\d,]+)',
         r'Ajuste a la decena.*?(?<!")(\d+)(?!")',
         r'Ajuste\ta\tla\tdecena.*?(?<!")(\d+)(?!")'
     ],
     'neto_pagar': [
+        r'Neto\s+a\s+pagar[,\s]*"?([0-9.,]+)"?',
         r'Neto a pagar.*?"([-\d,]+)"', 
         r'Neto\ta\tpagar.*?"([-\d,]+)"',
         r'Neto a pagar.*?(?<!")(\d+)(?!")',
