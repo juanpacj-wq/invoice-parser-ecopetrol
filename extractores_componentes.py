@@ -81,52 +81,83 @@ def limpiar_valor(valor, es_decimal=False):
         return "0"
     
     # Eliminar comillas y espacios
-    valor = valor.replace('"', '').strip()
-    
-    # Si está vacío después de limpiar
-    if not valor or valor == '-':
-        return "0"
-    
-    # Para valores con .0 al final (formato nuevo)
-    if not es_decimal and valor.endswith('.0'):
-        valor = valor[:-2]
-    
-    # Eliminar comas de miles
-    valor = valor.replace(',', '')
+    if isinstance(valor, str):
+        valor = valor.replace('"', '').strip()
+        
+        # Si está vacío después de limpiar
+        if not valor or valor == '-':
+            return "0"
+        
+        # Para valores con .0 al final (formato nuevo)
+        if not es_decimal and valor.endswith('.0'):
+            valor = valor[:-2]
+        
+        # Eliminar comas de miles
+        valor = valor.replace(',', '')
     
     return valor
 
 
-def procesar_componente_generacion(match, es_formato_nuevo):
+def extraer_energia_valores(content):
+    """
+    Extrae los valores de energía activa y reactiva directamente del contenido.
+    
+    Args:
+        content (str): Contenido del archivo CSV
+        
+    Returns:
+        tuple: (energia_activa, energia_reactiva_total)
+    """
+    # Buscar valor de energía activa
+    energia_activa_match = re.search(r'Energ[ií]a\s+activa[,\s]+"?([0-9.,]+)"?', content, re.IGNORECASE)
+    energia_activa = energia_activa_match.group(1) if energia_activa_match else "0"
+    
+    # Buscar valor de energía reactiva total
+    energia_reactiva_match = re.search(r'Total\s+energ[ií]a\s+reactiva[,\s]+"?([0-9.,]+)"?', content, re.IGNORECASE)
+    energia_reactiva_total = energia_reactiva_match.group(1) if energia_reactiva_match else "0"
+    
+    return limpiar_valor(energia_activa), limpiar_valor(energia_reactiva_total)
+
+
+def procesar_componente_generacion(match, es_formato_nuevo, energia_activa=None):
     """
     Procesa específicamente el componente de Generación.
     
     Args:
         match: Objeto match de regex
         es_formato_nuevo (bool): Si es formato nuevo o viejo
+        energia_activa (str, optional): Valor de energía activa extraído previamente
         
     Returns:
         dict: Diccionario con los datos del componente
     """
     concepto = {"concepto": "Generación"}
     
-    if es_formato_nuevo and len(match.groups()) == 4:
+    # Usar el valor de energía activa extraído si está disponible
+    if energia_activa is not None:
+        concepto["kwh_kvarh"] = energia_activa
+    elif es_formato_nuevo and len(match.groups()) == 4:
         # Formato nuevo sin kWh
         concepto["kwh_kvarh"] = "N/A"
+    elif len(match.groups()) >= 5:
+        # Formato viejo con kWh
+        concepto["kwh_kvarh"] = limpiar_valor(match.group(1))
+    else:
+        # Formato ambiguo, intentar detectar
+        concepto["kwh_kvarh"] = "N/A"
+    
+    # Procesar resto de campos
+    if es_formato_nuevo and len(match.groups()) == 4:
         concepto["precio_kwh"] = limpiar_valor(match.group(1), es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(match.group(2))
         concepto["mes_anteriores"] = limpiar_valor(match.group(3))
         concepto["total"] = limpiar_valor(match.group(4))
     elif len(match.groups()) >= 5:
-        # Formato viejo con kWh
-        concepto["kwh_kvarh"] = limpiar_valor(match.group(1))
         concepto["precio_kwh"] = limpiar_valor(match.group(2), es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(match.group(3))
         concepto["mes_anteriores"] = limpiar_valor(match.group(4))
         concepto["total"] = limpiar_valor(match.group(5))
     else:
-        # Formato ambiguo, intentar detectar
-        concepto["kwh_kvarh"] = "N/A"
         concepto["precio_kwh"] = limpiar_valor(match.group(1), es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(match.group(2))
         concepto["mes_anteriores"] = limpiar_valor(match.group(3))
@@ -135,36 +166,45 @@ def procesar_componente_generacion(match, es_formato_nuevo):
     return concepto
 
 
-def procesar_componente_energia_inductiva(match, es_formato_nuevo):
+def procesar_componente_energia_inductiva(match, es_formato_nuevo, energia_reactiva_total=None):
     """
     Procesa específicamente el componente de Energía inductiva + capacitiva.
     
     Args:
         match: Objeto match de regex
         es_formato_nuevo (bool): Si es formato nuevo o viejo
+        energia_reactiva_total (str, optional): Valor de energía reactiva total extraído previamente
         
     Returns:
         dict: Diccionario con los datos del componente
     """
     concepto = {"concepto": "Energía inductiva + capacitiva"}
     
-    if es_formato_nuevo and len(match.groups()) == 4:
+    # Usar el valor de energía reactiva total extraído si está disponible
+    if energia_reactiva_total is not None:
+        concepto["kwh_kvarh"] = energia_reactiva_total
+    elif es_formato_nuevo and len(match.groups()) == 4:
         # Formato nuevo sin kWh
         concepto["kwh_kvarh"] = "N/A"
+    elif len(match.groups()) >= 5:
+        # Formato viejo con kWh
+        concepto["kwh_kvarh"] = limpiar_valor(match.group(1))
+    else:
+        # Formato ambiguo
+        concepto["kwh_kvarh"] = "N/A"
+    
+    # Procesar resto de campos
+    if es_formato_nuevo and len(match.groups()) == 4:
         concepto["precio_kwh"] = limpiar_valor(match.group(1), es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(match.group(2))
         concepto["mes_anteriores"] = limpiar_valor(match.group(3))
         concepto["total"] = limpiar_valor(match.group(4))
     elif len(match.groups()) >= 5:
-        # Formato viejo con kWh
-        concepto["kwh_kvarh"] = limpiar_valor(match.group(1))
         concepto["precio_kwh"] = limpiar_valor(match.group(2), es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(match.group(3))
         concepto["mes_anteriores"] = limpiar_valor(match.group(4))
         concepto["total"] = limpiar_valor(match.group(5))
     else:
-        # Formato ambiguo
-        concepto["kwh_kvarh"] = "N/A"
         concepto["precio_kwh"] = limpiar_valor(match.group(1), es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(match.group(2))
         concepto["mes_anteriores"] = limpiar_valor(match.group(3))
@@ -218,6 +258,9 @@ def extraer_tabla_componentes(file_path):
     # Detectar formato de la tabla
     es_formato_nuevo = detectar_formato_tabla(content)
     
+    # Extraer valores de energía activa y reactiva total directamente del contenido
+    energia_activa, energia_reactiva_total = extraer_energia_valores(content)
+    
     concepto_data = []
     componentes_encontrados = set()
     
@@ -238,9 +281,9 @@ def extraer_tabla_componentes(file_path):
                 
                 # Procesar según el tipo de componente
                 if nombre == "Generación":
-                    concepto = procesar_componente_generacion(match, es_formato_nuevo)
+                    concepto = procesar_componente_generacion(match, es_formato_nuevo, energia_activa)
                 elif nombre == "Energía inductiva + capacitiva":
-                    concepto = procesar_componente_energia_inductiva(match, es_formato_nuevo)
+                    concepto = procesar_componente_energia_inductiva(match, es_formato_nuevo, energia_reactiva_total)
                 else:
                     concepto = procesar_componente_standard(match, nombre)
                 
@@ -251,12 +294,14 @@ def extraer_tabla_componentes(file_path):
     
     # Si faltan componentes, intentar extracción línea por línea
     if len(concepto_data) < 8:
-        extraer_componentes_linea_por_linea(content, concepto_data, componentes_encontrados, es_formato_nuevo)
+        extraer_componentes_linea_por_linea(content, concepto_data, componentes_encontrados, es_formato_nuevo, 
+                                           energia_activa, energia_reactiva_total)
     
     return concepto_data
 
 
-def extraer_componentes_linea_por_linea(content, concepto_data, componentes_encontrados, es_formato_nuevo):
+def extraer_componentes_linea_por_linea(content, concepto_data, componentes_encontrados, es_formato_nuevo, 
+                                       energia_activa=None, energia_reactiva_total=None):
     """
     Extrae componentes procesando el contenido línea por línea.
     
@@ -265,6 +310,8 @@ def extraer_componentes_linea_por_linea(content, concepto_data, componentes_enco
         concepto_data (list): Lista de conceptos ya encontrados
         componentes_encontrados (set): Set de nombres de componentes ya encontrados
         es_formato_nuevo (bool): Si es formato nuevo o viejo
+        energia_activa (str, optional): Valor de energía activa extraído previamente
+        energia_reactiva_total (str, optional): Valor de energía reactiva total extraído previamente
     """
     lines = content.split('\n')
     
@@ -295,7 +342,8 @@ def extraer_componentes_linea_por_linea(content, concepto_data, componentes_enco
         
         # Si identificamos el componente y no lo tenemos ya
         if component_name and component_name not in componentes_encontrados:
-            concepto = procesar_linea_componente(parts, component_name, es_formato_nuevo)
+            concepto = procesar_linea_componente(parts, component_name, es_formato_nuevo, 
+                                               energia_activa, energia_reactiva_total)
             if concepto:
                 concepto_data.append(concepto)
                 componentes_encontrados.add(component_name)
@@ -331,7 +379,8 @@ def identificar_componente(texto):
     return None
 
 
-def procesar_linea_componente(parts, component_name, es_formato_nuevo):
+def procesar_linea_componente(parts, component_name, es_formato_nuevo, 
+                            energia_activa=None, energia_reactiva_total=None):
     """
     Procesa una línea de componente parseada.
     
@@ -339,6 +388,8 @@ def procesar_linea_componente(parts, component_name, es_formato_nuevo):
         parts (list): Partes de la línea separadas por comas
         component_name (str): Nombre del componente
         es_formato_nuevo (bool): Si es formato nuevo o viejo
+        energia_activa (str, optional): Valor de energía activa extraído previamente
+        energia_reactiva_total (str, optional): Valor de energía reactiva total extraído previamente
         
     Returns:
         dict: Diccionario con los datos del componente
@@ -349,16 +400,34 @@ def procesar_linea_componente(parts, component_name, es_formato_nuevo):
     concepto = {"concepto": component_name}
     
     # Determinar estructura según el componente y cantidad de partes
-    if component_name == "Generación" and len(parts) >= 5 and not es_formato_nuevo:
-        # Posible formato viejo con kWh
-        concepto["kwh_kvarh"] = limpiar_valor(parts[1])
+    if component_name == "Generación":
+        # Usar el valor de energía activa extraído si está disponible
+        if energia_activa is not None:
+            concepto["kwh_kvarh"] = energia_activa
+        elif len(parts) >= 5 and not es_formato_nuevo:
+            # Posible formato viejo con kWh
+            concepto["kwh_kvarh"] = limpiar_valor(parts[1])
+        else:
+            concepto["kwh_kvarh"] = "N/A"
+    elif component_name == "Energía inductiva + capacitiva":
+        # Usar el valor de energía reactiva total extraído si está disponible
+        if energia_reactiva_total is not None:
+            concepto["kwh_kvarh"] = energia_reactiva_total
+        elif len(parts) >= 5 and not es_formato_nuevo:
+            concepto["kwh_kvarh"] = limpiar_valor(parts[1])
+        else:
+            concepto["kwh_kvarh"] = "N/A"
+    else:
+        concepto["kwh_kvarh"] = "N/A"
+    
+    # Determinar posiciones de los otros campos basados en si hay kWh o no
+    if len(parts) >= 5 and not es_formato_nuevo and component_name in ["Generación", "Energía inductiva + capacitiva"]:
         concepto["precio_kwh"] = limpiar_valor(parts[2], es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(parts[3])
         concepto["mes_anteriores"] = limpiar_valor(parts[4])
         concepto["total"] = limpiar_valor(parts[5] if len(parts) > 5 else "0")
     else:
         # Formato estándar o nuevo
-        concepto["kwh_kvarh"] = "N/A"
         concepto["precio_kwh"] = limpiar_valor(parts[1], es_decimal=True)
         concepto["mes_corriente"] = limpiar_valor(parts[2])
         concepto["mes_anteriores"] = limpiar_valor(parts[3])

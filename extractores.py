@@ -18,7 +18,8 @@ from extractores_pdf import (
 )
 from extractores_componentes import (
     extraer_tabla_componentes,
-    leer_archivo
+    leer_archivo,
+    extraer_energia_valores
 )
 
 
@@ -215,6 +216,41 @@ def extraer_datos_factura(file_path):
     parametros_especificos = extraer_parametros_especificos(content)
     results.update(parametros_especificos)
     
+    # Extraer directamente los valores de energía activa y reactiva
+    energia_activa, energia_reactiva_total = extraer_energia_valores(content)
+    
+    # Asegurarse de que los valores de energía reactiva inductiva y capacitiva sumen el total
+    # Si tenemos total_energia_reactiva pero no tenemos uno de los componentes
+    if results["total_energia_reactiva"] != "No encontrado" and energia_reactiva_total != "0":
+        # Actualizar el total con el valor extraído directamente
+        results["total_energia_reactiva"] = energia_reactiva_total
+        
+        # Si tenemos energía reactiva inductiva pero no capacitiva
+        if results["energia_reactiva_inductiva"] != "No encontrado" and results["energia_reactiva_capacitiva"] == "No encontrado":
+            # Calcular la capacitiva como la diferencia
+            try:
+                total = float(energia_reactiva_total)
+                inductiva = float(results["energia_reactiva_inductiva"].replace(',', ''))
+                capacitiva = total - inductiva
+                results["energia_reactiva_capacitiva"] = str(max(0, capacitiva))
+            except (ValueError, TypeError):
+                pass
+        
+        # Si tenemos energía reactiva capacitiva pero no inductiva
+        elif results["energia_reactiva_capacitiva"] != "No encontrado" and results["energia_reactiva_inductiva"] == "No encontrado":
+            # Calcular la inductiva como la diferencia
+            try:
+                total = float(energia_reactiva_total)
+                capacitiva = float(results["energia_reactiva_capacitiva"].replace(',', ''))
+                inductiva = total - capacitiva
+                results["energia_reactiva_inductiva"] = str(max(0, inductiva))
+            except (ValueError, TypeError):
+                pass
+    
+    # Actualizar también el valor de energía activa
+    if results.get("energia_activa", "No encontrado") == "No encontrado" and energia_activa != "0":
+        results["energia_activa"] = energia_activa
+    
     return results
 
 
@@ -246,5 +282,6 @@ __all__ = [
     'extraer_parametros_especificos',
     'extraer_datos_factura',
     'extraer_tabla_componentes',
-    'extraer_todos_datos_factura'
+    'extraer_todos_datos_factura',
+    'extraer_energia_valores'
 ]

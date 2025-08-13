@@ -125,22 +125,28 @@ PATRONES_CONCEPTO = {
         r'Neto\ta\tpagar.*?(?<!")(\d+)(?!")'
     ],
     'energia_reactiva_inductiva': [
-        r'Energía\s*reactiva\s*inductiva,\s*([-\d,]+)', 
-        r'Energía\treactiva\tinductiva,\s*"([-\d,]+)"',
-        r'Energía\s*reactiva\s*inductiva,\s*(?<!")(\d+)(?!")',
-        r'Energía\treactiva\tinductiva,\s*(?<!")(\d+)(?!")'
+        r'Energ[ií]a\s*reactiva\s*inductiva[,\s]+"?([0-9.,]+)"?', 
+        r'Energ[ií]a\treactiva\tinductiva[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\s*reactiva\s*inductiva[,\s]*(?<!")([0-9.,]+)(?!")',
+        r'Energ[ií]a\treactiva\tinductiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ],
     'energia_reactiva_capacitiva': [
-        r'Energía\s*reactiva\s*capacitiva,\s*([-\d,]+)', 
-        r'Energía\treactiva\tcapacitiva,\s*"([-\d,]+)"',
-        r'Energía\s*reactiva\s*capacitiva,\s*(?<!")(\d+)(?!")',
-        r'Energía\treactiva\tcapacitiva,\s*(?<!")(\d+)(?!")'
+        r'Energ[ií]a\s*reactiva\s*capacitiva[,\s]+"?([0-9.,]+)"?', 
+        r'Energ[ií]a\treactiva\tcapacitiva[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\s*reactiva\s*capacitiva[,\s]*(?<!")([0-9.,]+)(?!")',
+        r'Energ[ií]a\treactiva\tcapacitiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ],
     'total_energia_reactiva': [
-        r'Total\s*energía\s*reactiva,\s*([-\d,]+)', 
-        r'Total\tenergía\treactiva,\s*"([-\d,]+)"',
-        r'Total\s*energía\s*reactiva,\s*(?<!")(\d+)(?!")',
-        r'Total\tenergía\treactiva,\s*(?<!")(\d+)(?!")'
+        r'Total\s*energ[ií]a\s*reactiva[,\s]+"?([0-9.,]+)"?', 
+        r'Total\tenerg[ií]a\treactiva[,\s]+"?([0-9.,]+)"?',
+        r'Total\s*energ[ií]a\s*reactiva[,\s]*(?<!")([0-9.,]+)(?!")',
+        r'Total\tenerg[ií]a\treactiva[,\s]*(?<!")([0-9.,]+)(?!")'
+    ],
+    'energia_activa': [
+        r'Energ[ií]a\s*activa[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\tactiva[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\s*activa[,\s]*(?<!")([0-9.,]+)(?!")',
+        r'Energ[ií]a\tactiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ]
 }
 
@@ -180,7 +186,8 @@ COMPONENTES_ENERGIA = [
     {
         "name": "Pérdidas",
         "patterns": [
-            r'5\.\s+Perdidas\s+\(\*\),([-\d\.]+),"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?'
+            r'5\.\s+Perdidas\s+\(\*\),([-\d\.]+),"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?',
+            r'5\.\s+Pérdidas\s+\(\*\),([-\d\.]+),"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?,"?([-\d,]+\.?\d*)"?'
         ],
         "has_kwh": False
     },
