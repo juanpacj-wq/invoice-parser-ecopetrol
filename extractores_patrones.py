@@ -40,8 +40,18 @@ PATRONES_CONCEPTO = {
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*([-\d.,]+)'
     ],
     'subtotal_energia_contribucion_pesos': [
-        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Subtotal\tenerg[ií]a\t\+\tcontribución[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+     # NUEVOS PATRONES CORREGIDOS - Capturar el segundo valor después de la coma
+        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*[\d.]+[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\tenerg[ií]a\t\+\tcontribuciÃ³n[,\s]*[\d.]+[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\s+energia\s*\+\s*contribución[,\s]*[\d.]+[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\tenergía\t\+\tcontribución[,\s]*[\d.]+[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Patrón más específico para el formato exacto del ejemplo
+        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n,[\d.]+,"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\tenerg[ií]a\t\+\tcontribuciÃ³n,[\d.]+,"([0-9,]+(?:\.\d+)?)"',
+        # Patrones alternativos para capturar el segundo valor
+        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*[^,]+[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Subtotal\tenerg[ií]a\t\+\tcontribuciÃ³n[,\s]*[^,]+[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos como respaldo (modificados para evitar capturar el primer valor)
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*"([-\d,]+)"', 
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*"([-\d,]+)"',
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")',
