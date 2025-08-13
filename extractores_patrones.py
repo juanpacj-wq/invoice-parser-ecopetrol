@@ -7,20 +7,29 @@ para extraer información de las facturas de energía.
 # Patrones regex centralizados para extracción de datos generales
 PATRONES_CONCEPTO = {
     'subtotal_base_energia': [
-        r'Subtotal\s+base\s+energÃ­a[,\s]*"?([0-9.,]+)"?',
-        r'Subtotal\tbase\tenergÃ­a[,\s]*"?([0-9.,]+)"?',
+        # Nuevos patrones para manejar formato con .0 al final
+        r'Subtotal\s+base\s+energÃ­a[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\tbase\tenergÃ­a[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\s+base\s+energía[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Subtotal\tbase\tenergía[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Patrones adicionales para capturar el valor completo
+        r'Subtotal\s+base\s+energÃ­a[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Subtotal\tbase\tenergÃ­a[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos mantenidos por compatibilidad
         r'Subtotal base energía.*?"([-\d,]+)"', 
         r'Subtotal\tbase\tenergía.*?"([-\d,]+)"',
         r'Subtotal base energía.*?(?<!")(\d+)(?!")',
         r'Subtotal\tbase\tenergía.*?(?<!")(\d+)(?!")'
     ],
     'contribucion': [
-        r'ContribuciÃ³n[,\s]*"?([0-9.,]+)"?',
+        r'ContribuciÃ³n[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Contribución[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Contribución.*?"([-\d,]+)"',
         r'Contribución.*?(?<!")(\d+)(?!")'
     ],
     'contribucion_otros_meses': [
-        r'ContribuciÃ³n\s+de\s+otros\s+meses[,\s]*"?([0-9.,]+)"?',
+        r'ContribuciÃ³n\s+de\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Contribución\s+de\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Contribución de otros meses.*?([-\d,]+)', 
         r'Contribución\tde\totros\tmeses.*?([-\d,]+)',
         r'Contribución de otros meses.*?(?<!")(\d+)(?!")',
@@ -31,104 +40,138 @@ PATRONES_CONCEPTO = {
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*([-\d.,]+)'
     ],
     'subtotal_energia_contribucion_pesos': [
-        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*"?([0-9.,]+)"?',
-        r'Subtotal\tenerg[ií]a\t\+\tcontribución[,\s]*"?([0-9.,]+)"?',
+        r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Subtotal\tenerg[ií]a\t\+\tcontribución[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*"([-\d,]+)"', 
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*"([-\d,]+)"',
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")',
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")'
     ],
     'otros_cobros': [
-        r'Otros\s+cobros[,\s]*"?([-0-9.,]+)"?',
+        r'Otros\s+cobros[,\s]*"?([-0-9,]+(?:\.\d+)?)"?',
         r'Otros cobros.*?"([-\d,]+)"', 
         r'Otros\tcobros.*?"([-\d,]+)"',
         r'Otros cobros.*?(?<!")(\d+)(?!")', 
         r'Otros\tcobros.*?(?<!")(\d+)(?!")'
     ],
     'sobretasa': [
-       r'Sobretasa[,\s]*"?([0-9.,]+)"?',
+       r'Sobretasa[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
        r'Sobretasa.*?([-\d,]+)',
         r'Sobretasa.*?(?<!")(\d+)(?!")' 
     ],
     'ajustes_cargos_regulados': [
-        r'Ajustes\s+cargos\s+regulados[,\s]*"?([0-9.,]+)"?',
+        r'Ajustes\s+cargos\s+regulados[,\s]*"?([-0-9.,]+)"?',
+        r'Ajustes\s+cargos\s+regulados[,\s]*"(-[\d,.]+)"',
+        r'Ajustes\tcargos\tregulados[,\s]*"(-[\d,.]+)"',
+        r'Ajustes\scargos\sregulados,\s*"(-[\d,.]+)"',
+        r'Ajustes\tcargos\tregulados,\s*"(-[\d,.]+)"',
         r'Ajustes cargos regulados.*?"([-\d,]+)"', 
         r'Ajustes\tcargos\tregulados.*?"([-\d,]+)"',
-        r'Ajustes cargos regulados.*?(?<!")(\d+)(?!")',
-        r'Ajustes\tcargos\tregulados.*?(?<!")(\d+)(?!")'
+        r'Ajustes cargos regulados.*?(?<!")(-?\d+)(?!")',
+        r'Ajustes\tcargos\tregulados.*?(?<!")(-?\d+)(?!")'
     ],
     'compensaciones': [
-        r'Compensaciones[,\s]*"?([-0-9.,]+)"?',
+        r'Compensaciones[,\s]*"?([-0-9,]+(?:\.\d+)?)"?',
         r'Compensaciones.*?"([-\d,]+)"',
         r'Compensaciones.*?(?<!")(\d+)(?!")'
     ],
     'saldo_cartera': [
-        r'Saldo\s+cartera[,\s]*"?([0-9.,]+)"?',
+        r'Saldo\s+cartera[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Saldo cartera.*?"([-\d,]+)"', 
         r'Saldo\tcartera.*?([-\d,]+)',
         r'Saldo cartera.*?(?<!")(\d+)(?!")',
         r'Saldo\tcartera.*?(?<!")(\d+)(?!")'
     ],
     'interes_mora': [
-        r'InterÃ©s\s+por\s+Mora[,\s]*"?([0-9.,]+)"?',
+        r'InterÃ©s\s+por\s+Mora[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Interés\s+por\s+Mora[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Interés por Mora.*?"([-\d,]+)"', 
         r'Interés\tpor\tMora.*?"([-\d,]+)"',
         r'Interés por Mora.*?(?<!")(\d+)(?!")',
         r'Interés\tpor\tMora.*?(?<!")(\d+)(?!")'
     ],
     'recobros': [
-        r'Recobros[,\s]*"?([0-9.,]+)"?',
+        r'Recobros[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Recobros.*?([-\d,]+)',
         r'Recobros.*?(?<!")(\d+)(?!")' 
     ],
     'alumbrado_publico': [
-        r'Alumbrado\s+pÃºblico\s+\(\*\*\)[,\s]*"?([0-9.,]+)"?',
-        r'Alumbrado\s+público[,\s]*"?([0-9.,]+)"?',
+        # Nuevos patrones mejorados para capturar el valor completo con decimales
+        r'Alumbrado\s+pÃºblico\s+\(\*\*\)[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Alumbrado\s+público\s+\(\*\*\)[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Alumbrado\s+pÃºblico[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Alumbrado\s+público[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Alumbrado\tpúblico[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Alumbrado\tpÃºblico[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Patrones con comillas opcionales
+        r'Alumbrado\s+pÃºblico\s+\(\*\*\)[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Alumbrado\s+público[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos por compatibilidad
         r'Alumbrado público.*?([-\d,]+)', 
         r'Alumbrado\tpúblico.*?"([-\d,]+)"',
         r'Alumbrado público.*?(?<!")(\d+)(?!")', 
         r'Alumbrado\tpúblico.*?(?<!")(\d+)(?!")'
     ],
     'impuesto_alumbrado_publico': [
-        r'Impuesto\s+alumbrado\s+pÃºblico[,\s]*"?([0-9.,]+)"?',
-        r'Impuesto\s+alumbrado\s+público[,\s]*"?([0-9.,]+)"?',
+        # Nuevos patrones mejorados
+        r'Impuesto\s+alumbrado\s+pÃºblico[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Impuesto\s+alumbrado\s+público[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Impuesto\talumbrado\tpúblico[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Impuesto\talumbrado\tpÃºblico[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Con comillas opcionales
+        r'Impuesto\s+alumbrado\s+pÃºblico[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Impuesto\s+alumbrado\s+público[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos
         r'Impuesto alumbrado público.*?([-\d,]+)', 
         r'Impuesto\talumbrado\tpúblico.*?"([-\d,]+)"',
         r'Impuesto alumbrado público.*?(?<!")(\d+)(?!")',
         r'Impuesto\talumbrado\tpúblico.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_iap_otros_meses': [
-        r'Ajuste\s+IAP\s+otros\s+meses[,\s]*"?([0-9.,]+)"?',
+        r'Ajuste\s+IAP\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Ajuste IAP otros meses.*?([-\d,]+)', 
         r'Ajuste\tIAP\totros\tmeses.*?"([-\d,]+)"',
         r'Ajuste IAP otros meses.*?(?<!")(\d+)(?!")',
         r'Ajuste\tIAP\totros\tmeses.*?(?<!")(\d+)(?!")'
     ],
     'convivencia_ciudadana': [
-        r'Convivencia\s+ciudadana\s+\(\*\*\*\)[,\s]*"?([0-9.,]+)"?',
-        r'Convivencia\s+ciudadana[,\s]*"?([0-9.,]+)"?',
+        # Nuevos patrones mejorados
+        r'Convivencia\s+ciudadana\s+\(\*\*\*\)[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Convivencia\s+ciudadana[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Convivencia\tciudadana[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Con comillas opcionales
+        r'Convivencia\s+ciudadana\s+\(\*\*\*\)[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Convivencia\s+ciudadana[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos
         r'Convivencia ciudadana.*?"([-\d,]+)"', 
         r'Convivencia\tciudadana.*?"([-\d,]+)"',
         r'Convivencia ciudadana.*?(?<!")(\d+)(?!")',
         r'Convivencia\tciudadana.*?(?<!")(\d+)(?!")'
     ],
     'tasa_especial_convivencia': [
-        r'Tasa\s+especial\s+convivencia\s+ciudadana[,\s]*"?([0-9.,]+)"?',
+        r'Tasa\s+especial\s+convivencia\s+ciudadana[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Tasa especial convivencia ciudadana.*?"([-\d,]+)"', 
         r'Tasa\tespecial\tconvivencia\tciudadana.*?"([-\d,]+)"',
         r'Tasa especial convivencia ciudadana.*?(?<!")(\d+)(?!")',
         r'Tasa\tespecial\tconvivencia\tciudadana.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_tasa_convivencia': [
-        r'Ajuste\s+tasa\s+convivencia\s+otros\s+meses[,\s]*"?([0-9.,]+)"?',
+        r'Ajuste\s+tasa\s+convivencia\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Ajuste tasa convivencia otros meses.*?"([-\d,]+)"', 
         r'Ajuste\ttasa\tconvivencia\totros\tmeses.*?"([-\d,]+)"',
         r'Ajuste tasa convivencia otros meses.*?(?<!")(\d+)(?!")',
         r'Ajuste\ttasa\tconvivencia\totros\tmeses.*?(?<!")(\d+)(?!")'
     ],
     'total_servicio_energia_impuestos': [
-        r'Total\s+servicio\s+energÃ­a\s+\+\s+impuestos[,\s]*"?([0-9.,]+)"?',
-        r'Total\s+servicio\s+energía\s+\+\s+impuestos[,\s]*"?([0-9.,]+)"?',
+        # Nuevos patrones mejorados
+        r'Total\s+servicio\s+energÃ­a\s+\+\s+impuestos[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Total\s+servicio\s+energía\s+\+\s+impuestos[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Total\tservicio\tenergía\t\+\timpuestos[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Total\tservicio\tenergÃ­a\t\+\timpuestos[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Con comillas opcionales
+        r'Total\s+servicio\s+energÃ­a\s+\+\s+impuestos[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Total\s+servicio\s+energía\s+\+\s+impuestos[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos
         r'Total servicio energía \+ impuestos.*?"([-\d,]+)"', 
         r'Total\tservicio\tenergía\t\+\timpuestos.*?"([-\d,]+)"', 
         r'Total\tservicio\tenergía\t\\\+\timpuestos.*?"([-\d,]+)"',
@@ -137,40 +180,45 @@ PATRONES_CONCEPTO = {
         r'Total\tservicio\tenergía\t\\\+\timpuestos.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_decena': [
-        r'Ajuste\s+a\s+la\s+decena[,\s]*"?([0-9.,]+)"?',
+        r'Ajuste\s+a\s+la\s+decena[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Ajuste a la decena.*?([-\d,]+)', 
         r'Ajuste\ta\tla\tdecena.*?([-\d,]+)',
         r'Ajuste a la decena.*?(?<!")(\d+)(?!")',
         r'Ajuste\ta\tla\tdecena.*?(?<!")(\d+)(?!")'
     ],
     'neto_pagar': [
-        r'Neto\s+a\s+pagar[,\s]*"?([0-9.,]+)"?',
+        # Nuevos patrones mejorados
+        r'Neto\s+a\s+pagar[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        r'Neto\ta\tpagar[,\s]*"([0-9,]+(?:\.\d+)?)"',
+        # Con comillas opcionales
+        r'Neto\s+a\s+pagar[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        # Patrones antiguos
         r'Neto a pagar.*?"([-\d,]+)"', 
         r'Neto\ta\tpagar.*?"([-\d,]+)"',
         r'Neto a pagar.*?(?<!")(\d+)(?!")',
         r'Neto\ta\tpagar.*?(?<!")(\d+)(?!")'
     ],
     'energia_reactiva_inductiva': [
-        r'Energ[ií]a\s*reactiva\s*inductiva[,\s]+"?([0-9.,]+)"?', 
-        r'Energ[ií]a\treactiva\tinductiva[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\s*reactiva\s*inductiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Energ[ií]a\treactiva\tinductiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Energ[ií]a\s*reactiva\s*inductiva[,\s]*(?<!")([0-9.,]+)(?!")',
         r'Energ[ií]a\treactiva\tinductiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ],
     'energia_reactiva_capacitiva': [
-        r'Energ[ií]a\s*reactiva\s*capacitiva[,\s]+"?([0-9.,]+)"?', 
-        r'Energ[ií]a\treactiva\tcapacitiva[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\s*reactiva\s*capacitiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Energ[ií]a\treactiva\tcapacitiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Energ[ií]a\s*reactiva\s*capacitiva[,\s]*(?<!")([0-9.,]+)(?!")',
         r'Energ[ií]a\treactiva\tcapacitiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ],
     'total_energia_reactiva': [
-        r'Total\s*energ[ií]a\s*reactiva[,\s]+"?([0-9.,]+)"?', 
-        r'Total\tenerg[ií]a\treactiva[,\s]+"?([0-9.,]+)"?',
+        r'Total\s*energ[ií]a\s*reactiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Total\tenerg[ií]a\treactiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Total\s*energ[ií]a\s*reactiva[,\s]*(?<!")([0-9.,]+)(?!")',
         r'Total\tenerg[ií]a\treactiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ],
     'energia_activa': [
-        r'Energ[ií]a\s*activa[,\s]+"?([0-9.,]+)"?',
-        r'Energ[ií]a\tactiva[,\s]+"?([0-9.,]+)"?',
+        r'Energ[ií]a\s*activa[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
+        r'Energ[ií]a\tactiva[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Energ[ií]a\s*activa[,\s]*(?<!")([0-9.,]+)(?!")',
         r'Energ[ií]a\tactiva[,\s]*(?<!")([0-9.,]+)(?!")'
     ]
