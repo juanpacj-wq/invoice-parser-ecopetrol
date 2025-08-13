@@ -193,20 +193,33 @@ def extraer_datos_factura(file_path):
                 break
         results[var_name] = value
     
-    # Calcular subtotal_energia_contribucion_pesos como la suma de subtotal_base_energia y contribucion
-    try:
-        # Convertir valores a números, eliminando las comas
-        subtotal_base = int(results["subtotal_base_energia"].replace(',', '')) if results["subtotal_base_energia"] != "No encontrado" else 0
-        contribucion = int(results["contribucion"].replace(',', '')) if results["contribucion"] != "No encontrado" else 0
-        
-        # Calcular la suma
-        subtotal_energia_contribucion_pesos = subtotal_base + contribucion
-        
-        # Formatear el resultado con comas para miles
-        results["subtotal_energia_contribucion_pesos"] = f"{subtotal_energia_contribucion_pesos:,}"
-    except (ValueError, KeyError):
-        # En caso de error, establecer un valor por defecto
-        results["subtotal_energia_contribucion_pesos"] = "No encontrado"
+    # Intentar extraer subtotal_energia_contribucion_pesos directamente usando patrones
+    for pattern in PATRONES_CONCEPTO['subtotal_energia_contribucion_pesos']:
+        match = re.search(pattern, content)
+        if match:
+            # Clean the captured value
+            captured_value = match.group(1)
+            # Remove commas at the beginning of the value
+            if captured_value.startswith(','):
+                captured_value = captured_value[1:]
+            results["subtotal_energia_contribucion_pesos"] = captured_value
+            break
+    
+    # Si no se encontró, calcular subtotal_energia_contribucion_pesos como la suma de subtotal_base_energia y contribucion
+    if "subtotal_energia_contribucion_pesos" not in results or results["subtotal_energia_contribucion_pesos"] == "No encontrado":
+        try:
+            # Convertir valores a números, eliminando las comas
+            subtotal_base = int(results["subtotal_base_energia"].replace(',', '').replace('"', '')) if results["subtotal_base_energia"] != "No encontrado" else 0
+            contribucion = int(results["contribucion"].replace(',', '').replace('"', '')) if results["contribucion"] != "No encontrado" else 0
+            
+            # Calcular la suma
+            subtotal_energia_contribucion_pesos = subtotal_base + contribucion
+            
+            # Formatear el resultado con comas para miles
+            results["subtotal_energia_contribucion_pesos"] = f"{subtotal_energia_contribucion_pesos:,}"
+        except (ValueError, KeyError):
+            # En caso de error, establecer un valor por defecto
+            results["subtotal_energia_contribucion_pesos"] = "No encontrado"
     
     # Extraer valores HES (autorizaciones)
     hes_values = extraer_valores_hes(content)
@@ -230,7 +243,7 @@ def extraer_datos_factura(file_path):
             # Calcular la capacitiva como la diferencia
             try:
                 total = float(energia_reactiva_total)
-                inductiva = float(results["energia_reactiva_inductiva"].replace(',', ''))
+                inductiva = float(results["energia_reactiva_inductiva"].replace(',', '').replace('"', ''))
                 capacitiva = total - inductiva
                 results["energia_reactiva_capacitiva"] = str(max(0, capacitiva))
             except (ValueError, TypeError):
@@ -241,7 +254,7 @@ def extraer_datos_factura(file_path):
             # Calcular la inductiva como la diferencia
             try:
                 total = float(energia_reactiva_total)
-                capacitiva = float(results["energia_reactiva_capacitiva"].replace(',', ''))
+                capacitiva = float(results["energia_reactiva_capacitiva"].replace(',', '').replace('"', ''))
                 inductiva = total - capacitiva
                 results["energia_reactiva_inductiva"] = str(max(0, inductiva))
             except (ValueError, TypeError):

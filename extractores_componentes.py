@@ -42,7 +42,8 @@ def detectar_formato_tabla(content):
         r'Tarifa\s*\$\/kWh',
         r'Ajustes\s+meses\s+anteriores',
         r'"Tarifa\s+\$\/kWh"',
-        r'"Ajustes\s+meses"\s+"anteriores\s+\$"'
+        r'"Ajustes\s+meses"\s+"anteriores\s+\$"',
+        r'EnergÃ­a\s+activa'  # Nuevo indicador para el formato con codificación alterada
     ]
     
     # Indicadores del formato viejo
@@ -109,12 +110,34 @@ def extraer_energia_valores(content):
         tuple: (energia_activa, energia_reactiva_total)
     """
     # Buscar valor de energía activa
-    energia_activa_match = re.search(r'Energ[ií]a\s+activa[,\s]+"?([0-9.,]+)"?', content, re.IGNORECASE)
-    energia_activa = energia_activa_match.group(1) if energia_activa_match else "0"
+    energia_activa_patterns = [
+        r'Energ[ií]a\s+activa[,\s]+"?([0-9.,]+)"?', 
+        r'EnergÃ­a\s+activa[,\s]+"?([0-9.,]+)"?', 
+        r'"EnergÃ­a\tactiva,""([0-9.,]+)"""',
+        r'EnergÃ­a\tactiva,([0-9.,]+)'
+    ]
+    
+    energia_activa = "0"
+    for pattern in energia_activa_patterns:
+        match = re.search(pattern, content, re.IGNORECASE)
+        if match:
+            energia_activa = match.group(1)
+            break
     
     # Buscar valor de energía reactiva total
-    energia_reactiva_match = re.search(r'Total\s+energ[ií]a\s+reactiva[,\s]+"?([0-9.,]+)"?', content, re.IGNORECASE)
-    energia_reactiva_total = energia_reactiva_match.group(1) if energia_reactiva_match else "0"
+    energia_reactiva_patterns = [
+        r'Total\s+energ[ií]a\s+reactiva[,\s]+"?([0-9.,]+)"?',
+        r'Total\s+energÃ­a\s+reactiva[,\s]+"?([0-9.,]+)"?',
+        r'"Total\tenergÃ­a\treactiva,([0-9.,]+)"',
+        r'Total\tenergÃ­a\treactiva,([0-9.,]+)'
+    ]
+    
+    energia_reactiva_total = "0"
+    for pattern in energia_reactiva_patterns:
+        match = re.search(pattern, content, re.IGNORECASE)
+        if match:
+            energia_reactiva_total = match.group(1)
+            break
     
     return limpiar_valor(energia_activa), limpiar_valor(energia_reactiva_total)
 
@@ -360,20 +383,20 @@ def identificar_componente(texto):
         str: Nombre del componente o None
     """
     componentes_map = {
-        '1.': ('Generación', ['Generación']),
-        '2.': ('Comercialización', ['Comercialización']),
-        '3.': ('Transmisión', ['Transmisión']),
-        '4.': ('Distribución', ['Distribución']),
-        '5.': ('Pérdidas', ['Perdidas', 'Pérdidas']),
-        '6.': ('Restricciones', ['Restricciones']),
-        '7.': ('Otros cargos', ['Otros']),
-        '8.': ('Energía inductiva + capacitiva', ['inductiva', 'capacitiva'])
+        '1.': ('Generación', ['Generación', 'Generacion', 'GeneraciÃ³n']),
+        '2.': ('Comercialización', ['Comercialización', 'Comercializacion', 'ComercializaciÃ³n']),
+        '3.': ('Transmisión', ['Transmisión', 'Transmision', 'TransmisiÃ³n']),
+        '4.': ('Distribución', ['Distribución', 'Distribucion', 'DistribuciÃ³n']),
+        '5.': ('Pérdidas', ['Perdidas', 'Pérdidas', 'PÃ©rdidas']),
+        '6.': ('Restricciones', ['Restricciones', 'RestricciÃ³n']),
+        '7.': ('Otros cargos', ['Otros', 'Otro']),
+        '8.': ('Energía inductiva + capacitiva', ['inductiva', 'capacitiva', 'EnergÃ­a'])
     }
     
     for prefix, (nombre, keywords) in componentes_map.items():
         if prefix in texto:
             for keyword in keywords:
-                if keyword in texto:
+                if keyword.lower() in texto.lower():
                     return nombre
     
     return None

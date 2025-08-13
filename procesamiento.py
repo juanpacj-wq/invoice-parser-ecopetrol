@@ -273,6 +273,14 @@ def validar_ruta_archivo(file_path):
             with open(file_path, 'r', encoding='utf-8') as file:
                 # Intentar leer el archivo
                 file.read(1)
+        except UnicodeDecodeError:
+            try:
+                with open(file_path, 'r', encoding='latin-1') as file:
+                    # Intentar leer con otra codificación
+                    file.read(1)
+            except Exception as e:
+                print(f"Error al acceder al archivo {file_path}: {e}")
+                return False
         except Exception as e:
             print(f"Error al acceder al archivo {file_path}: {e}")
             return False
