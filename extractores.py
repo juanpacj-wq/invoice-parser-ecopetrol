@@ -84,7 +84,24 @@ def extraer_parametros_especificos(content):
         'diug': "0"
     }
 
-    # Patrones combinados primero
+    # LÓGICA ESPECIAL PARA IR - Verificar primero si está vacío
+    # Buscar el patrón "IR:,Grupo:" que indica que IR está vacío
+    if re.search(r'IR:\s*,\s*Grupo:', content):
+        # IR está vacío, mantener el valor por defecto "0"
+        parametros['ir'] = "0"
+    else:
+        # IR no está vacío, intentar extraer su valor
+        for patron in PATRONES_PARAMETROS_ESPECIFICOS['ir'][1:]:  # Omitir el primer patrón de detección
+            match = re.search(patron, content)
+            if match:
+                value = match.group(1)
+                # Limpiar el valor para asegurarse de que sea numérico
+                cleaned_value = re.sub(r'[^0-9.]', '', value)
+                if cleaned_value:
+                    parametros['ir'] = cleaned_value
+                    break
+
+    # Patrones combinados para DIU/DIUM y FIU/FIUM
     match_diu = re.search(PATRONES_PARAMETROS_ESPECIFICOS['diu_dium_int'][0], content)
     if match_diu:
         parametros['diu_int'] = match_diu.group(1)
@@ -95,8 +112,8 @@ def extraer_parametros_especificos(content):
         parametros['fiu_int'] = match_fiu.group(1)
         parametros['fium_int'] = match_fiu.group(2)
 
-    # Patrones individuales para los que no se encontraron en pareja
-    for key in ['ir', 'grupo', 'diu_int', 'dium_int', 'fiu_int', 'fium_int', 'fiug', 'diug']:
+    # Patrones individuales para los que no se encontraron en pareja (excepto IR que ya fue procesado)
+    for key in ['grupo', 'diu_int', 'dium_int', 'fiu_int', 'fium_int', 'fiug', 'diug']:
         if parametros[key] == "0": # Solo buscar si no se ha encontrado ya
             for patron in PATRONES_PARAMETROS_ESPECIFICOS[key]:
                 match = re.search(patron, content)
@@ -117,6 +134,7 @@ def extraer_parametros_especificos(content):
                         if cleaned_value:
                             parametros[key] = cleaned_value
                             break # Salir del bucle de patrones para esta clave
+    
     return parametros
 
 

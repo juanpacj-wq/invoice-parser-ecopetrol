@@ -304,9 +304,14 @@ COMPONENTES_ENERGIA = [
 # Patrones para extraer los parámetros específicos datos OR
 PATRONES_PARAMETROS_ESPECIFICOS = {
     'ir': [
-        r'IR:\s*(?:,|\s+)([^,\s]+)',
-        r'IR:,([^,]+)',
-        r'IR:\s*(\d+)'
+        # PATRONES CORREGIDOS PARA IR
+        # Patrón específico para cuando IR está vacío seguido de coma y luego Grupo
+        r'IR:\s*,\s*Grupo:',  # Este patrón detecta cuando IR está vacío
+        # Patrón para cuando IR tiene un valor antes de la coma
+        r'IR:\s*(\d+(?:\.\d+)?)\s*,',  # Captura el valor de IR solo si hay un número antes de la coma
+        r'IR:\s+(\d+(?:\.\d+)?)\s*(?:,|$)',  # IR con espacio y valor, seguido de coma o fin de línea
+        # Patrón para IR sin coma después (al final de línea)
+        r'IR:\s*(\d+(?:\.\d+)?)\s*$'
     ],
     'grupo': [
         r'Grupo:\s*(?:,|\s+)(\d+)',
