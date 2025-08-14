@@ -7,7 +7,7 @@ import re
 
 # Importar funciones de los módulos especializados
 from extractores_patrones import (
-    PATRONES_CONCEPTO, 
+    PATRONES_CONCEPTO,
     PATRONES_PARAMETROS_ESPECIFICOS
 )
 from extractores_pdf import (
@@ -83,34 +83,40 @@ def extraer_parametros_especificos(content):
         'fiug': "0",
         'diug': "0"
     }
-    
-    # Buscar los patrones completos primero para FIUG y DIUG que son los más confiables
-    patron_fiug_diug = r'FIUG:\s*([\d.]+),\s*DIUG:\s*([\d.]+)'
-    match = re.search(patron_fiug_diug, content)
-    if match:
-        parametros['fiug'] = match.group(1)
-        parametros['diug'] = match.group(2)
-    
-    # Buscar el grupo
-    patron_grupo = r'Grupo:\s*(\d+)'
-    match = re.search(patron_grupo, content)
-    if match:
-        parametros['grupo'] = match.group(1)
-    
-    # Buscar los valores INT que son numéricos - sólo buscar dígitos
-    for key in ['diu_int', 'dium_int', 'fiu_int', 'fium_int']:
-        for patron in PATRONES_PARAMETROS_ESPECIFICOS[key]:
-            match = re.search(patron, content)
-            if match and match.group(1).isdigit():
-                parametros[key] = match.group(1)
-                break
-    
-    # IR es un caso especial - debe ser un número
-    patron_ir_especifico = r'IR:\s*(\d+)'
-    match = re.search(patron_ir_especifico, content)
-    if match and match.group(1).isdigit():
-        parametros['ir'] = match.group(1)
-    
+
+    # Patrones combinados primero
+    match_diu = re.search(PATRONES_PARAMETROS_ESPECIFICOS['diu_dium_int'][0], content)
+    if match_diu:
+        parametros['diu_int'] = match_diu.group(1)
+        parametros['dium_int'] = match_diu.group(2)
+
+    match_fiu = re.search(PATRONES_PARAMETROS_ESPECIFICOS['fiu_fium_int'][0], content)
+    if match_fiu:
+        parametros['fiu_int'] = match_fiu.group(1)
+        parametros['fium_int'] = match_fiu.group(2)
+
+    # Patrones individuales para los que no se encontraron en pareja
+    for key in ['ir', 'grupo', 'diu_int', 'dium_int', 'fiu_int', 'fium_int', 'fiug', 'diug']:
+        if parametros[key] == "0": # Solo buscar si no se ha encontrado ya
+            for patron in PATRONES_PARAMETROS_ESPECIFICOS[key]:
+                match = re.search(patron, content)
+                if match:
+                    # Para patrones combinados como fiug_diug, puede haber más de un grupo
+                    if key == 'fiug' and 'DIUG' in patron:
+                        parametros['fiug'] = match.group(1)
+                        parametros['diug'] = match.group(2)
+                        break # Salir del bucle de patrones para esta clave
+                    elif key == 'diug' and 'FIUG' in patron:
+                        parametros['fiug'] = match.group(1)
+                        parametros['diug'] = match.group(2)
+                        break # Salir del bucle de patrones para esta clave
+                    else:
+                        value = match.group(1)
+                        # Limpiar el valor para asegurarse de que sea numérico
+                        cleaned_value = re.sub(r'[^0-9.]', '', value)
+                        if cleaned_value:
+                            parametros[key] = cleaned_value
+                            break # Salir del bucle de patrones para esta clave
     return parametros
 
 

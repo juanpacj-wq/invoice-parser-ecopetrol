@@ -16,7 +16,7 @@ PATRONES_CONCEPTO = {
         r'Subtotal\s+base\s+energÃ­a[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Subtotal\tbase\tenergÃ­a[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos mantenidos por compatibilidad
-        r'Subtotal base energía.*?"([-\d,]+)"', 
+        r'Subtotal base energía.*?"([-\d,]+)"',
         r'Subtotal\tbase\tenergía.*?"([-\d,]+)"',
         r'Subtotal base energía.*?(?<!")(\d+)(?!")',
         r'Subtotal\tbase\tenergía.*?(?<!")(\d+)(?!")'
@@ -30,13 +30,13 @@ PATRONES_CONCEPTO = {
     'contribucion_otros_meses': [
         r'ContribuciÃ³n\s+de\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Contribución\s+de\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Contribución de otros meses.*?([-\d,]+)', 
+        r'Contribución de otros meses.*?([-\d,]+)',
         r'Contribución\tde\totros\tmeses.*?([-\d,]+)',
         r'Contribución de otros meses.*?(?<!")(\d+)(?!")',
         r'Contribución\tde\totros\tmeses.*?(?<!")(\d+)(?!")'
     ],
     'subtotal_energia_contribucion_kwh': [
-        r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*([-\d.,]+)', 
+        r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*([-\d.,]+)',
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*([-\d.,]+)'
     ],
     'subtotal_energia_contribucion_pesos': [
@@ -52,22 +52,22 @@ PATRONES_CONCEPTO = {
         r'Subtotal\s+energia\s*\+\s*contribuciÃ³n[,\s]*[^,]+[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Subtotal\tenerg[ií]a\t\+\tcontribuciÃ³n[,\s]*[^,]+[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos como respaldo (modificados para evitar capturar el primer valor)
-        r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*"([-\d,]+)"', 
+        r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*"([-\d,]+)"',
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*"([-\d,]+)"',
         r'\$\/kWh,\$\s*Subtotal\s*energia\s*\+\s*contribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")',
         r'\$\/kWh,\$\s*Subtotal\tenerg[ií]a\t\+\tcontribución,\s*[-\d.,]+,\s*(?<!")(\d+)(?!")'
     ],
     'otros_cobros': [
         r'Otros\s+cobros[,\s]*"?([-0-9,]+(?:\.\d+)?)"?',
-        r'Otros cobros.*?"([-\d,]+)"', 
+        r'Otros cobros.*?"([-\d,]+)"',
         r'Otros\tcobros.*?"([-\d,]+)"',
-        r'Otros cobros.*?(?<!")(\d+)(?!")', 
+        r'Otros cobros.*?(?<!")(\d+)(?!")',
         r'Otros\tcobros.*?(?<!")(\d+)(?!")'
     ],
     'sobretasa': [
        r'Sobretasa[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
        r'Sobretasa.*?([-\d,]+)',
-        r'Sobretasa.*?(?<!")(\d+)(?!")' 
+        r'Sobretasa.*?(?<!")(\d+)(?!")'
     ],
     'ajustes_cargos_regulados': [
         r'Ajustes\s+cargos\s+regulados[,\s]*"?([-0-9.,]+)"?',
@@ -75,7 +75,7 @@ PATRONES_CONCEPTO = {
         r'Ajustes\tcargos\tregulados[,\s]*"(-[\d,.]+)"',
         r'Ajustes\scargos\sregulados,\s*"(-[\d,.]+)"',
         r'Ajustes\tcargos\tregulados,\s*"(-[\d,.]+)"',
-        r'Ajustes cargos regulados.*?"([-\d,]+)"', 
+        r'Ajustes cargos regulados.*?"([-\d,]+)"',
         r'Ajustes\tcargos\tregulados.*?"([-\d,]+)"',
         r'Ajustes cargos regulados.*?(?<!")(-?\d+)(?!")',
         r'Ajustes\tcargos\tregulados.*?(?<!")(-?\d+)(?!")'
@@ -87,7 +87,7 @@ PATRONES_CONCEPTO = {
     ],
     'saldo_cartera': [
         r'Saldo\s+cartera[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Saldo cartera.*?"([-\d,]+)"', 
+        r'Saldo cartera.*?"([-\d,]+)"',
         r'Saldo\tcartera.*?([-\d,]+)',
         r'Saldo cartera.*?(?<!")(\d+)(?!")',
         r'Saldo\tcartera.*?(?<!")(\d+)(?!")'
@@ -95,7 +95,7 @@ PATRONES_CONCEPTO = {
     'interes_mora': [
         r'InterÃ©s\s+por\s+Mora[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Interés\s+por\s+Mora[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Interés por Mora.*?"([-\d,]+)"', 
+        r'Interés por Mora.*?"([-\d,]+)"',
         r'Interés\tpor\tMora.*?"([-\d,]+)"',
         r'Interés por Mora.*?(?<!")(\d+)(?!")',
         r'Interés\tpor\tMora.*?(?<!")(\d+)(?!")'
@@ -103,7 +103,7 @@ PATRONES_CONCEPTO = {
     'recobros': [
         r'Recobros[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Recobros.*?([-\d,]+)',
-        r'Recobros.*?(?<!")(\d+)(?!")' 
+        r'Recobros.*?(?<!")(\d+)(?!")'
     ],
     'alumbrado_publico': [
         # Nuevos patrones mejorados para capturar el valor completo con decimales
@@ -117,9 +117,9 @@ PATRONES_CONCEPTO = {
         r'Alumbrado\s+pÃºblico\s+\(\*\*\)[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Alumbrado\s+público[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos por compatibilidad
-        r'Alumbrado público.*?([-\d,]+)', 
+        r'Alumbrado público.*?([-\d,]+)',
         r'Alumbrado\tpúblico.*?"([-\d,]+)"',
-        r'Alumbrado público.*?(?<!")(\d+)(?!")', 
+        r'Alumbrado público.*?(?<!")(\d+)(?!")',
         r'Alumbrado\tpúblico.*?(?<!")(\d+)(?!")'
     ],
     'impuesto_alumbrado_publico': [
@@ -132,14 +132,14 @@ PATRONES_CONCEPTO = {
         r'Impuesto\s+alumbrado\s+pÃºblico[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Impuesto\s+alumbrado\s+público[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos
-        r'Impuesto alumbrado público.*?([-\d,]+)', 
+        r'Impuesto alumbrado público.*?([-\d,]+)',
         r'Impuesto\talumbrado\tpúblico.*?"([-\d,]+)"',
         r'Impuesto alumbrado público.*?(?<!")(\d+)(?!")',
         r'Impuesto\talumbrado\tpúblico.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_iap_otros_meses': [
         r'Ajuste\s+IAP\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Ajuste IAP otros meses.*?([-\d,]+)', 
+        r'Ajuste IAP otros meses.*?([-\d,]+)',
         r'Ajuste\tIAP\totros\tmeses.*?"([-\d,]+)"',
         r'Ajuste IAP otros meses.*?(?<!")(\d+)(?!")',
         r'Ajuste\tIAP\totros\tmeses.*?(?<!")(\d+)(?!")'
@@ -153,21 +153,21 @@ PATRONES_CONCEPTO = {
         r'Convivencia\s+ciudadana\s+\(\*\*\*\)[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Convivencia\s+ciudadana[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos
-        r'Convivencia ciudadana.*?"([-\d,]+)"', 
+        r'Convivencia ciudadana.*?"([-\d,]+)"',
         r'Convivencia\tciudadana.*?"([-\d,]+)"',
         r'Convivencia ciudadana.*?(?<!")(\d+)(?!")',
         r'Convivencia\tciudadana.*?(?<!")(\d+)(?!")'
     ],
     'tasa_especial_convivencia': [
         r'Tasa\s+especial\s+convivencia\s+ciudadana[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Tasa especial convivencia ciudadana.*?"([-\d,]+)"', 
+        r'Tasa especial convivencia ciudadana.*?"([-\d,]+)"',
         r'Tasa\tespecial\tconvivencia\tciudadana.*?"([-\d,]+)"',
         r'Tasa especial convivencia ciudadana.*?(?<!")(\d+)(?!")',
         r'Tasa\tespecial\tconvivencia\tciudadana.*?(?<!")(\d+)(?!")'
     ],
     'ajuste_tasa_convivencia': [
         r'Ajuste\s+tasa\s+convivencia\s+otros\s+meses[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Ajuste tasa convivencia otros meses.*?"([-\d,]+)"', 
+        r'Ajuste tasa convivencia otros meses.*?"([-\d,]+)"',
         r'Ajuste\ttasa\tconvivencia\totros\tmeses.*?"([-\d,]+)"',
         r'Ajuste tasa convivencia otros meses.*?(?<!")(\d+)(?!")',
         r'Ajuste\ttasa\tconvivencia\totros\tmeses.*?(?<!")(\d+)(?!")'
@@ -182,8 +182,8 @@ PATRONES_CONCEPTO = {
         r'Total\s+servicio\s+energÃ­a\s+\+\s+impuestos[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         r'Total\s+servicio\s+energía\s+\+\s+impuestos[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos
-        r'Total servicio energía \+ impuestos.*?"([-\d,]+)"', 
-        r'Total\tservicio\tenergía\t\+\timpuestos.*?"([-\d,]+)"', 
+        r'Total servicio energía \+ impuestos.*?"([-\d,]+)"',
+        r'Total\tservicio\tenergía\t\+\timpuestos.*?"([-\d,]+)"',
         r'Total\tservicio\tenergía\t\\\+\timpuestos.*?"([-\d,]+)"',
         r'Total servicio energía \+ impuestos.*?(?<!")(\d+)(?!")',
         r'Total\tservicio\tenergía\t\+\timpuestos.*?(?<!")(\d+)(?!")',
@@ -191,7 +191,7 @@ PATRONES_CONCEPTO = {
     ],
     'ajuste_decena': [
         r'Ajuste\s+a\s+la\s+decena[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
-        r'Ajuste a la decena.*?([-\d,]+)', 
+        r'Ajuste a la decena.*?([-\d,]+)',
         r'Ajuste\ta\tla\tdecena.*?([-\d,]+)',
         r'Ajuste a la decena.*?(?<!")(\d+)(?!")',
         r'Ajuste\ta\tla\tdecena.*?(?<!")(\d+)(?!")'
@@ -203,7 +203,7 @@ PATRONES_CONCEPTO = {
         # Con comillas opcionales
         r'Neto\s+a\s+pagar[,\s]*"?([0-9,]+(?:\.\d+)?)"?',
         # Patrones antiguos
-        r'Neto a pagar.*?"([-\d,]+)"', 
+        r'Neto a pagar.*?"([-\d,]+)"',
         r'Neto\ta\tpagar.*?"([-\d,]+)"',
         r'Neto a pagar.*?(?<!")(\d+)(?!")',
         r'Neto\ta\tpagar.*?(?<!")(\d+)(?!")'
@@ -304,39 +304,50 @@ COMPONENTES_ENERGIA = [
 # Patrones para extraer los parámetros específicos datos OR
 PATRONES_PARAMETROS_ESPECIFICOS = {
     'ir': [
-        r'IR:\s*(?:,|\s+)([^,\s]+)', 
+        r'IR:\s*(?:,|\s+)([^,\s]+)',
         r'IR:,([^,]+)',
         r'IR:\s*(\d+)'
     ],
     'grupo': [
-        r'Grupo:\s*(?:,|\s+)(\d+)', 
-        r'Grupo:,(\d+)', 
-        r'Grupo: (\d+)'
+        r'Grupo:\s*(?:,|\s+)(\d+)',
+        r'Grupo:,(\d+)',
+        r'Grupo:\s*(\d+)'
     ],
     'diu_int': [
-        r'DIU INT:\s*(?:,|\s+)([^,\s]+)', 
+        r'DIU\s+INT:\s*([\d\.]+)',
+        r'DIU INT:\s*(?:,|\s+)([^,\s]+)',
         r'DIU INT:,([^,]+)'
     ],
     'dium_int': [
-        r'DIUM INT:\s*(?:,|\s+)([^,\s]+)', 
+        r'DIUM\s+INT:\s*([\d\.]+)',
+        r'DIUM INT:\s*(?:,|\s+)([^,\s]+)',
         r'DIUM INT:,([^,]+)'
     ],
     'fiu_int': [
-        r'FIU INT:\s*(?:,|\s+)([^,\s]+)', 
+        r'FIU\s+INT:\s*([\d\.]+)',
+        r'FIU INT:\s*(?:,|\s+)([^,\s]+)',
         r'FIU INT:,([^,]+)'
     ],
     'fium_int': [
-        r'FIUM INT:\s*(?:,|\s+)([^,\s]+)', 
+        r'FIUM\s+INT:\s*([\d\.]+)',
+        r'FIUM INT:\s*(?:,|\s+)([^,\s]+)',
         r'FIUM INT:,([^,]+)'
     ],
     'fiug': [
-        r'FIUG:\s*(?:,|\s+)([\d.]+)', 
-        r'FIUG: ([\d.]+)',
+        r'FIUG:\s*(?:,|\s+)([\d.]+)',
+        r'FIUG:\s*([\d.]+)',
         r'FIUG:\s*([\d.]+),\s*DIUG:\s*([\d.]+)'  # Patrón combinado
     ],
     'diug': [
-        r'DIUG:\s*(?:,|\s+)([\d.]+)', 
-        r'DIUG: ([\d.]+)',
+        r'DIUG:\s*(?:,|\s+)([\d.]+)',
+        r'DIUG:\s*([\d.]+)',
         r'FIUG:\s*([\d.]+),\s*DIUG:\s*([\d.]+)'  # Patrón combinado
+    ],
+    # Nuevos patrones combinados para extraer valores de la misma línea
+    'diu_dium_int': [
+        r'DIU\s+INT:\s*([\d\.]+),DIUM\s+INT:\s*([\d\.]+)'
+    ],
+    'fiu_fium_int': [
+        r'FIU\s+INT:\s*([\d\.]+),FIUM\s+INT:\s*([\d\.]+)'
     ]
 }
