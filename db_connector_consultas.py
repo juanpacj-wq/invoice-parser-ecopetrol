@@ -107,7 +107,7 @@ def _get_main_query():
         str: Consulta SQL
     """
     return """
-    SELECT frontera as frt, factura_dian as factura, v_consumo_energia_ajustado as subtotal_energía_total, v_contribucion + v_consumo_energia_ajustado as subtotal_energía_contribución_pesos,
+    SELECT frontera as frt, factura_dian as factura, v_consumo_energia_ajustado as subtotal_energía_total, v_contribucion + v_consumo_energia_ajustado + v_contribucion_otros_meses as subtotal_energía_contribución_pesos,
     q_activa as energía_activa, q_inductiva_pen as energía_reactiva_inductiva_facturada, q_reactiva_pen as total_energia_reactiva,
     q_capacitiva_pen as energía_reactiva_capacitiva_facturada, v_gm as generación_mes_corriente, 
     v_rm as restricciones_mes_corriente, v_cm as comercialización_mes_corriente, v_dm as distribución_mes_corriente, 
@@ -124,7 +124,7 @@ def _get_main_query():
     v_compensacion as compensaciones, total_saldo_cartera as amortizacion, v_iapb as impuesto_alumbrado_público, 
     v_iap_ajuste as ajuste_iap_otros_meses, v_sgcv as tasa_especial_convivencia_ciudadana, v_asgcv as ajuste_tasa_convivencia_otros_meses, v_sobretasa as sobretasa,
     v_neto_factura as neto_a_pagar, factor_m, v_aj_cargos_regulados as ajustes_cargos_regulados, 
-    interes_mora as interés_por_mora, v_neto_factura as total_servicio_energía_impuestos,v_asgcv + v_sgcv as covivencia_ciudadana,
+    interes_mora as interés_por_mora, v_neto_factura as total_servicio_energía_impuestos,v_asgcv + v_sgcv as covivencia_ciudadana,v_contribucion_otros_meses,
     
     --interes_mora+v_aj_cargos_regulados+v_compensacion+total_saldo_cartera as otros_cobros
 
@@ -181,7 +181,7 @@ def _get_alternative_query():
         str: Consulta SQL alternativa
     """
     return """
-    SELECT frontera as frt, factura_dian as factura, v_consumo_energia_ajustado as subtotal_energía_total,  v_contribucion + v_consumo_energia_ajustado as subtotal_energía_contribución_pesos,
+    SELECT frontera as frt, factura_dian as factura, v_consumo_energia_ajustado as subtotal_energía_total,  v_contribucion + v_consumo_energia_ajustado + v_contribucion_otros_meses as subtotal_energía_contribución_pesos,
     q_activa as energía_activa, q_inductiva_pen as energía_reactiva_inductiva_facturada, q_reactiva_pen as total_energia_reactiva,
     q_capacitiva_pen as energía_reactiva_capacitiva_facturada, v_gm as generación_mes_corriente, 
     v_rm as restricciones_mes_corriente, v_cm as comercialización_mes_corriente, v_dm as distribución_mes_corriente, 
@@ -199,7 +199,7 @@ def _get_alternative_query():
     v_iap_ajuste as ajuste_iap_otros_meses, v_sgcv as tasa_especial_convivencia_ciudadana, v_asgcv as ajuste_tasa_convivencia_otros_meses, 
     v_neto_factura as neto_a_pagar, factor_m, v_aj_cargos_regulados as ajustes_cargos_regulados, 
     interes_mora as interés_por_mora,v_asgcv + v_sgcv as covivencia_ciudadana,v_sobretasa as sobretasa,
-    fechafacturacion, v_neto_factura as total_servicio_energía_impuestos,
+    fechafacturacion, v_neto_factura as total_servicio_energía_impuestos,v_contribucion_otros_meses ,
     
     -- Campos adicionales para componentes detallados
     q_activa as generación_kwh_kvarh, 

@@ -189,7 +189,7 @@ def _get_variables_mapping():
         'codigo_sic': 'frt',
         'subtotal_base_energia': 'subtotal_energía_total',
         'contribucion': 'contribución',
-        'contribucion_otros_meses': 'contribución_otros_meses',
+        'contribucion_otros_meses': 'v_contribucion_otros_meses',
         'subtotal_energia_contribucion_pesos': 'subtotal_energía_contribución_pesos',
         'otros_cobros': 'otros_cobros',
         'sobretasa': 'sobretasa',
